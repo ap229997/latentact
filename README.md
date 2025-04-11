@@ -23,4 +23,6 @@ This repository contains the code for the CVPR 2025 paper [How Do I Do That? Syn
 
 ## License
 
-All the material here is released under the Creative Commons Attribution-NonCommerial 4.0 International License, found [here](https://creativecommons.org/licenses/by-nc/4.0/). For all the datasets used in this work, please refer to their respective licenses.
+All the material here is released under the Creative Commons Attribution-NonCommerial 4.0 International License, found [here](https://creativecommons.org/licenses/by-nc/4.0/). This means that you must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use. You may not use the material for commercial purposes. 
+
+For all the datasets and codebase used in this work, refer to the respective websites/repos for citation and license details.
