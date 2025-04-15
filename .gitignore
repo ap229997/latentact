@@ -2,6 +2,11 @@
 **._**
 **.DS_Store
 **._DS_Store
+*.vscode*
+*logs/*
+*out/*
+*output/*
+**__pycache__**
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

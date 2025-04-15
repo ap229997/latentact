@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Viewer with Metadata</title>
+    <style>
+        #image-container {
+            position: relative;
+            display: inline-block;
+        }
+        .click-point {
+            position: absolute;
+            background-color: red; /* Color for the click point */
+            border-radius: 50%;
+            width: 10px; /* Diameter of the point */
+            height: 10px;
+            transform: translate(-50%, -50%); /* Center the point */
+        }
+    </style>
+    
+    <script>
+        let currentImage = "{{ image }}";
+        let imageList = {{ images | tojson }};  // Pass the list of images to JavaScript
+        let imageMetadata = {{ all_metadata | tojson }};  // Pass the metadata to JavaScript
+    
+        function imageClick(event) {
+            const x = event.offsetX;
+            const y = event.offsetY;
+    
+            // Create a new point element
+            const point = document.createElement('div');
+            point.className = 'click-point';
+            point.style.left = `${x}px`;
+            point.style.top = `${y}px`;
+    
+            // Append the point to the image container
+            const imageContainer = document.getElementById('image-container');
+            imageContainer.appendChild(point);
+    
+            // Send click data to Flask
+            fetch("/save_click", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ image: currentImage, x: x, y: y })
+            }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    console.log("Click saved: (" + x + ", " + y + ")");
+                }
+            });
+        }
+    
+        function loadImage(image) {
+            currentImage = image;
+            resetPoints();  // Clear points before loading a new image
+            document.getElementById("image").src = `/images/${currentImage}`;
+            document.getElementById("filename").innerText = currentImage.split('/').pop();  // Display filename only
+    
+            const metadata = imageMetadata[image];
+            document.getElementById("metadata").innerHTML = `
+                <li>start: ${metadata[0]}</li>
+                <li>end: ${metadata[1]}</li>
+                <li>verb: ${metadata[2]}</li>
+                <li>noun: ${metadata[3]}</li>
+                <li>hand: ${metadata[4]}</li>
+            `;
+    
+            // // Reload click points for the current image
+            // loadClickPoints(currentImage);
+        }
+    
+        function loadClickPoints(image) {
+            fetch('/api/clicks')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const clickData = data.data.filter(click => click.image === image);
+                        const imageContainer = document.getElementById('image-container');
+    
+                        // Clear any existing click points
+                        resetPoints();
+    
+                        // Create click points for the current image
+                        clickData.forEach(click => {
+                            const point = document.createElement('div');
+                            point.className = 'click-point';
+                            point.style.left = `${click.x}px`;
+                            point.style.top = `${click.y}px`;
+                            imageContainer.appendChild(point);
+                        });
+                    }
+                });
+        }
+    
+        function loadNextImage() {
+            const currentIndex = imageList.indexOf(currentImage);
+            const nextIndex = (currentIndex + 1) % imageList.length;
+            loadImage(imageList[nextIndex]);
+        }
+    
+        function loadPreviousImage() {
+            const currentIndex = imageList.indexOf(currentImage);
+            const prevIndex = (currentIndex - 1 + imageList.length) % imageList.length;
+            loadImage(imageList[prevIndex]);
+        }
+
+        function resetPoints() {
+            const imageContainer = document.getElementById('image-container');
+            // Remove all click points
+            const points = imageContainer.getElementsByClassName('click-point');
+            while (points.length > 0) {
+                points[0].parentNode.removeChild(points[0]);
+            }
+        }
+    
+        function handleDropdownChange(event) {
+            const selectedImage = event.target.value;
+            loadImage(selectedImage);
+        }
+    
+        function resetClickPoints() {
+            // Send request to reset click points for the current image
+            fetch(`/reset_clicks/${currentImage}`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }).then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    resetPoints();  // Clear points from the display only
+                    console.log(data.message);
+                }
+            });
+        }
+    </script>    
+    
+</head>
+<body>
+    <h1>Click on the Image</h1>
+
+    <div>
+        <h3 id="filename">{{ image.split('/').pop() }}</h3>
+        <div id="image-container">
+            <img id="image" src="/images/{{ image }}" alt="{{ image }}" onclick="imageClick(event)">
+        </div>
+        
+        <ul id="metadata">
+            <li>start: {{ metadata[0] }}</li>
+            <li>end: {{ metadata[1] }}</li>
+            <li>verb: {{ metadata[2] }}</li>
+            <li>noun: {{ metadata[3] }}</li>
+            <li>hand: {{ metadata[4] }}</li>
+        </ul>
+
+        <button onclick="loadPreviousImage()">Previous Image</button>
+        <button onclick="loadNextImage()">Next Image</button>
+        <button onclick="resetClickPoints()">Reset Click Points</button>
+
+        <select id="image-dropdown" onchange="handleDropdownChange(event)">
+            <option value="">Select an Image</option>
+            {% for img in images %}
+                <option value="{{ img }}">{{ img.split('/').pop() }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</body>
+</html>

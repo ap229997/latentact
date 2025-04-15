@@ -1,0 +1,15 @@
+.vscode/
+.DS_Store
+__pycache__/
+*-checkpoint.ipynb
+.venv
+*.egg*
+build/*
+_C.*
+outputs/*
+checkpoints/*.pt
+notebooks/videos/*/*.jpg
+notebooks/images/*.jpg
+assets/*
+notebooks/videos/*/*.mp4
+label_ui/static/images/*
