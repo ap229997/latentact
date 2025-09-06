@@ -608,7 +608,16 @@ class HoloMotion(data.Dataset):
         return feat_data
     
     def load_contacts(self, contact_dir):
-        files = glob.glob(f'{contact_dir}/contact_*_fix.pkl')
+        # order in which files are loaded determines the order of elements in the "contact_data[k] += v" list
+        # this needs to be fixed since all subsequent contact precomputations depends on this order
+        load_order_file = f'{contact_dir}/load_order.json'
+        if os.path.exists(load_order_file):
+            with open(load_order_file, 'r') as f:
+                load_order = json.load(f)
+            file_order = load_order[self.opt.dataset_name]
+            files = [os.path.join(contact_dir, f) for f in file_order]
+        else:
+            files = glob.glob(f'{contact_dir}/contact_*_fix.pkl')
         contact_data = {}
         # combine dicts from all pkl files
         for file in tqdm(files):
@@ -619,7 +628,7 @@ class HoloMotion(data.Dataset):
                     if k not in contact_data:
                         contact_data[k] = v
                     else:
-                        contact_data[k] += v
+                        contact_data[k] += v # order of elements here depends on the order of files loaded
         num_seq = len(contact_data['names'])
         print (f'Loaded {num_seq} sequences with contact')
         return contact_data
