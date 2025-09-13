@@ -119,10 +119,10 @@ Add `--dataset_name arctic` to run on [ARCTIC](https://arctic.is.tue.mpg.de/) da
 
 ## Evaluation
 
-This requires the learned codebook, indexer and interpred checkpoints (check `demo` folder for a sample checkpoint). The learned codebook is already stored in the interpred checkpoint.
+This requires the learned codebook, indexer and interpred checkpoints (check `demo` folder for a sample checkpoint). The learned codebook is already stored in the interpred checkpoint. For the above training commands, use `--load_prior debug_indexer` and `--eval_model debug_interpred` when running `eval.py`.
 
 ```bash
-CUDA_VISIBLE_DEVICES=0 python eval.py --name debug_interpred --motion_type mano --code_dim 512 --nb_code 512 --contact_grid 16 --contact_dim 16 --pred_cam --contact_map --video_feats 768 --text_feats --batch_size 512 --decoder_only --only_first --load_prior debug_indexer --setting tasks
+CUDA_VISIBLE_DEVICES=0 python eval.py --name debug_interpred --motion_type mano --code_dim 512 --nb_code 512 --contact_grid 16 --contact_dim 16 --pred_cam --contact_map --video_feats 768 --text_feats --batch_size 512 --decoder_only --only_first --load_prior <path_to_indexer> --eval_model <path_to_interpred> --setting tasks
 ```
 
 Change `--setting` from `tasks` (task-level) to `categories` (object-level), `actions` (action-level) or `instances` (scene-level) for the 4 generalization setting used in our work. Change `--only_first` to `--interpolate` for interpolation setting and add `--use_inpaint` for the setting with hands absent in the image.
