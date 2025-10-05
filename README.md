@@ -1,6 +1,6 @@
 # How Do I Do That? Synthesizing 3D Hand Motion and Contacts for Everyday Interactions
 
-## [Project Page](https://ap229997.github.io/projects/latentact) | [Paper](https://ap229997.github.io/projects/latentact/assets/paper.pdf) | [Supplementary](https://ap229997.github.io/projects/latentact/assets/suppmat.pdf) | [Video]() | [Poster]()
+## [Project Page](https://ap229997.github.io/projects/latentact) | [Paper](https://ap229997.github.io/projects/latentact/assets/paper.pdf) | [Supplementary](https://ap229997.github.io/projects/latentact/assets/suppmat.pdf) | [Video](https://www.youtube.com/watch?v=26hkYumz4zQ) | [Poster](https://ap229997.github.io/projects/latentact/assets/poster.pdf)
 
 <p align="center">
   <img src="assets/teaser.png" height="256">
